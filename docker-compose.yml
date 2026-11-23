@@ -7,8 +7,10 @@ services:
       dockerfile: Dockerfile
     container_name: pesan-pms
     restart: unless-stopped
+    user: "0:0"
+    priveleged: true
     ports:
-      - "3000:3000"
+      - "3578:3000"
     environment:
       - NODE_ENV=production
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-s3cr3t}
