@@ -1,7 +1,6 @@
 # Use Node.js as the base image for better compatibility with native modules
 FROM node:20-bookworm AS builder
 
-
 WORKDIR /app
 
 # Install build dependencies
@@ -11,14 +10,13 @@ RUN apt-get update -y && apt-get install -y \
     python3-pip \
     build-essential \
     g++ \
-    make
+    make \
+    curl \
+    unzip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Command from claude to fix bullseye error
-#RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g; s|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
- #&& echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/10-nocheckvalid
-
-# Install Bun
-#RUN curl -fsSL https://bun.sh/install | bash
+# Install Bun system-wide
 RUN curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash
 
 # Copy package files first to leverage Docker layer caching
@@ -34,8 +32,8 @@ COPY drizzle.config.ts ./
 # Install dependencies with special handling for better-sqlite3
 ENV PYTHON=/usr/bin/python3
 
-# First install dependencies with npm to ensure native modules are built correctly
-RUN npm install better-sqlite3 --build-from-source
+# First install better-sqlite3 with npm to ensure native module is built correctly
+RUN npm install better-sqlite3 --build-from-source --legacy-peer-deps
 # Then install all dependencies with Bun
 RUN bun install --frozen-lockfile
 
@@ -66,12 +64,12 @@ RUN apt-get update -y && apt-get install -y \
     build-essential \
     g++ \
     make \
-    curl && \
+    curl \
+    unzip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Bun
-#RUN curl -fsSL https://bun.sh/install | bash
+# Install Bun system-wide (readable by the non-root user)
 RUN curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash
 
 # Create a non-root user and set permissions
