@@ -18,8 +18,8 @@ RUN apt-get update -y && apt-get install -y \
  #&& echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/10-nocheckvalid
 
 # Install Bun
-RUN curl -fsSL https://bun.sh/install | bash
-ENV PATH="/root/.bun/bin:${PATH}"
+#RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash
 
 # Copy package files first to leverage Docker layer caching
 COPY package.json ./
@@ -71,8 +71,8 @@ RUN apt-get update -y && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # Install Bun
-RUN curl -fsSL https://bun.sh/install | bash
-ENV PATH="/root/.bun/bin:${PATH}"
+#RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash
 
 # Create a non-root user and set permissions
 RUN groupadd --system --gid 1001 nodejs && \
